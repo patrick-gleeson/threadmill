@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b User:
+  = @order.user.name
+%p
+  %b Total:
+  = @order.total_formatted
+%p
+  %b Line Items:
+- @order.line_items.each do |line_item|
+  %p
+    \#{line_item.item.name} x #{line_item.quantity} @ #{line_item.price_formatted}
+    
+
+= link_to 'Edit', edit_order_path(@order)
+\|
+= link_to 'Back', orders_path

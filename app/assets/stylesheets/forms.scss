@@ -1,0 +1,16 @@
+input[type="submit"] {
+  @extend .btn;
+}
+
+.alert-alert {
+  @extend .alert-warning;
+}
+
+.alert-notice {
+  @extend .alert-info;
+}
+
+label {
+  display:inline-block;
+  width:200px;
+}
