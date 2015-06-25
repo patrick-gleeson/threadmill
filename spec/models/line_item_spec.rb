@@ -20,16 +20,47 @@ RSpec.describe LineItem, type: :model do
     end
   end
   
+  describe "change_stock hook" do
+    it "changes stock levels on creation" do
+      stock = create :stock
+      item = create :item
+      stock_effect = create :stock_effect, item: item, stock: stock
+      item.reload
+      line_item.item = item
+      expected_stock_level = stock.level - (line_item.quantity * stock_effect.change)
+      
+      line_item.save
+      stock.reload
+      expect(stock.level).to eq expected_stock_level
+    end
+  end
+  
+  describe "unchange_stock hook" do
+    it "changes stock levels on destroy" do
+      stock = create :stock
+      item = create :item
+      stock_effect = create :stock_effect, item: item, stock: stock
+      item.reload
+      line_item.item = item
+      expected_stock_level = stock.level
+      
+      line_item.save
+      line_item.destroy
+      stock.reload
+      expect(stock.level).to eq expected_stock_level
+    end
+  end
+  
   describe "public instance methods" do
     context "responds to its methods" do
-      it { expect(line_item).to respond_to(:price_formatted) }
+      it { expect(line_item).to respond_to(:price_dollars_with_symbol) }
     end
  
     context "executes methods correctly" do
-      context "#price_formatted" do
+      describe "#price_dollars_with_symbol" do
         it "converts cents to dollars and adds a $" do
           line_item.price_at_purchase = 100
-          expect(line_item.price_formatted).to eq("$1.00")
+          expect(line_item.price_dollars_with_symbol).to eq("$1.00")
         end
       end
     end

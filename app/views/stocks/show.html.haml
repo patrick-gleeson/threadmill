@@ -1,0 +1,13 @@
+%p
+  %b Name:
+  = @stock.name
+%p
+  %b Level:
+  = @stock.level
+  = @stock.unit
+  - if @stock.estimate
+    (estimate)
+
+= link_to 'Edit', edit_stock_path(@stock)
+\|
+= link_to 'Back', stocks_path

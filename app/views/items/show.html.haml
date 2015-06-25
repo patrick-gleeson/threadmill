@@ -1,11 +1,18 @@
-%p#notice= notice
-
 %p
   %b Name:
   = @item.name
 %p
   %b Cost:
-  = @item.price_formatted
+  = @item.price_dollars_with_symbol
+%p
+  Reduces stock by:
+- @item.stock_effects.each do |effect|
+  %p
+    %b= effect.stock.name
+    \:
+    = effect.change
+    = effect.stock.unit
+  
 
 = link_to 'Edit', edit_item_path(@item)
 \|

@@ -1,7 +1,7 @@
 = form_for @item do |f|
   - if @item.errors.any?
-    #error_explanation
-      %h2= "#{pluralize(@item.errors.count, "error")} prohibited this item from being saved:"
+    #error_explanation.alert-warning
+      %p= "#{pluralize(@item.errors.count, "error")} prohibited this item from being saved:"
       %ul
         - @item.errors.full_messages.each do |msg|
           %li= msg
@@ -12,5 +12,15 @@
   .field
     = f.label :price_dollars, "Price ($)"
     = f.text_field :price_dollars
+    
+  = f.fields_for :stock_effects do |ff|
+    .field.row
+      .col-md-1
+        = ff.object.stock.name 
+        = ff.hidden_field :stock_id
+      .col-md-3
+        = ff.label :change, "Reduces stock by (#{ff.object.stock.unit})"
+      .col-md-2
+        = ff.number_field :change
   .actions
     = f.submit 'Save'

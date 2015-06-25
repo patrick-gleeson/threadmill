@@ -1,9 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe ItemsController, type: :controller do
-
+  let(:stock) { create :stock }
   let(:valid_attributes) {
-    {name: "Some Menu Item", price_dollars: "1.00"}
+    {name: "Some Menu Item", 
+     price_dollars: "1.00",
+     stock_effects_attributes:[{stock_id: stock.id, change: 100}]}
   }
 
   let(:invalid_attributes) {

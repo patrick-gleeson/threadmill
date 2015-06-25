@@ -1,8 +1,11 @@
+# An order is what a customer asks for
 class Order < ActiveRecord::Base
+  include PriceFormattable
+  
   paginates_per 30
   
   belongs_to :user
-  has_many :line_items, dependent: :delete_all
+  has_many :line_items, dependent: :destroy
   accepts_nested_attributes_for :line_items, 
                                 reject_if: proc { |attributes| (attributes['quantity'].blank? || 
                                                                 attributes['quantity'] == "0")}
@@ -10,6 +13,7 @@ class Order < ActiveRecord::Base
   validates :total_selected_items, numericality: { greater_than: 0 }
   
   before_save :clear_old_line_items
+  before_destroy :clear_old_line_items
   
   def setup_line_items
     Item.all.each do |item|
@@ -19,16 +23,9 @@ class Order < ActiveRecord::Base
     end
   end
   
-  def total_formatted
-    total_dollars = MoneyConversions::Formatter.cents_to_dollar_string(total_cents)
-    
-    MoneyConversions::Formatter.add_dollar_symbol(total_dollars)
-  end
-  
   def date_formatted
     created_at.strftime("%A, %d %b %Y")
   end
-  
   
   private
   
@@ -37,6 +34,8 @@ class Order < ActiveRecord::Base
       memo += ((line_item.quantity || 0) * (line_item.price_at_purchase || 0))
     end
   end
+  
+  alias price_cents total_cents
   
   def total_selected_items
     line_items.inject(0) do |memo, line_item|
@@ -50,7 +49,9 @@ class Order < ActiveRecord::Base
   
   def clear_old_line_items
     line_items.each do |line_item|
-      line_items.delete(line_item) if line_item.persisted?
+      if line_item.persisted?
+        line_items.destroy(line_item)
+      end
     end
   end
 end

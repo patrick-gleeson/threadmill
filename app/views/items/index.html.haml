@@ -13,7 +13,7 @@
     - @items.each do |item|
       %tr
         %td= item.name
-        %td= item.price_formatted
+        %td= item.price_dollars_with_symbol
         %td= link_to 'Show', item
         %td= link_to 'Edit', edit_item_path(item)
         %td= link_to 'Destroy', item, :method => :delete, :data => { :confirm => 'Are you sure?' }

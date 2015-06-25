@@ -5,6 +5,6 @@ RSpec.describe "home/index", type: :view do
     render
     expect(rendered).to match(/Create an order/)
     expect(rendered).to match(/Check stock/)
-    expect(rendered).to match(/Configure items for sale/)
+    expect(rendered).to match(/Configure menu items/)
   end
 end

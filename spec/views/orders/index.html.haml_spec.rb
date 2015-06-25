@@ -10,6 +10,6 @@ RSpec.describe "orders/index", type: :view do
 
   it "renders a list of orders" do
     render
-    assert_select "tr>td", :text => @orders.first.total_formatted, :count => 1
+    assert_select "tr>td", :text => @orders.first.price_dollars_with_symbol, :count => 1
   end
 end

@@ -8,6 +8,6 @@ RSpec.describe "items/show", type: :view do
   it "renders attributes in <p>" do
     render
     expect(rendered).to match(Regexp.new @item.name)
-    expect(rendered).to match(Regexp.new(Regexp.quote(@item.price_formatted)))
+    expect(rendered).to match(Regexp.new(Regexp.quote(@item.price_dollars_with_symbol)))
   end
 end

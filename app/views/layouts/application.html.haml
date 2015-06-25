@@ -4,7 +4,6 @@
     %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
     %title Threadmill
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
-    = javascript_include_tag 'application', 'data-turbolinks-track' => true
     = csrf_meta_tags
   %body
     %nav.navbar.navbar-inverse
@@ -16,6 +15,13 @@
             %span.icon-bar
             %span.icon-bar
           %a.navbar-brand{href: root_path} Threadmill
+        - if signed_in?
+          #navbar.collapse.navbar-collapse
+            %ul.nav.navbar-nav
+              %li= link_to "Stock", stocks_path
+              %li= link_to "Menu Items", items_path
+              %li= link_to "Orders", orders_path
+              %li= link_to "Sign Out", destroy_user_session_path
     .container
       .row
         - flash.each do |key, value| 

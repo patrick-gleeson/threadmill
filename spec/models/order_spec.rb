@@ -23,7 +23,7 @@ RSpec.describe Order, type: :model do
   describe "public instance methods" do
     context "responds to its methods" do
       it { expect(order).to respond_to(:setup_line_items) }
-      it { expect(order).to respond_to(:total_formatted) }
+      it { expect(order).to respond_to(:price_dollars_with_symbol) }
       it { expect(order).to respond_to(:date_formatted) }
     end
     
@@ -52,12 +52,12 @@ RSpec.describe Order, type: :model do
         end
       end
       
-      describe "#total_formatted" do
+      describe "#price_dollars_with_symbol" do
         it "sums the price at purchase of all line items" do
           line_items = create_list(:line_item, 5)
           order.line_items = line_items
           expected_total = line_items.inject(0) {|m, li| m + (li.quantity * li.price_at_purchase)}
-          expect(order.total_formatted).to eq "$" + '%.02f' % (expected_total/100.0)
+          expect(order.price_dollars_with_symbol).to eq "$" + '%.02f' % (expected_total/100.0)
         end
       end
       
@@ -70,4 +70,23 @@ RSpec.describe Order, type: :model do
     end
   end
   
+  describe "class methods" do
+    describe ".page" do
+      it "only returns a max of 30 items" do
+        item = create :item
+        50.times do
+          Order.create!(line_items_attributes:[{item_id: item.id, quantity: 2}])
+        end
+        expect(Order.page(1).count).to eq 30
+      end
+      
+      it "returns different results on different pages" do
+        item = create :item
+        50.times do
+          Order.create!(line_items_attributes:[{item_id: item.id, quantity: 2}])
+        end
+        expect((Order.page(1).to_a & Order.page(2).to_a).count).to eq 0
+      end
+    end
+  end
 end
