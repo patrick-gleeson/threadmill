@@ -59,65 +59,6 @@ RSpec.feature "Order management", :type => :feature do
       expect(page).to have_text("Order was successfully destroyed")
     end
     
-    scenario "New order decreases stock" do
-      stock_effect = create :stock_effect, item: @line_item.item
-      stock = stock_effect.stock
-      old_level = stock.level
-      new_level = old_level - (2*stock_effect.change)
-      visit "/orders/new"
-      fill_in "Quantity", with: "2"
-      click_button "Save"
-      visit stock_path(stock)
-      expect(page).to have_text(new_level)
-      expect(page).to have_text("estimate")
-    end
-    
-    scenario "Deleting order returns stock" do
-      stock_effect = create :stock_effect, item: @line_item.item
-      stock = stock_effect.stock
-      old_level = stock.level
-      visit "/orders/new"
-      fill_in "Quantity", with: "2"
-      click_button "Save"
-      visit "/orders"
-      click_link "Destroy"
-      visit stock_path(stock)
-      expect(page).to have_text(old_level)
-      expect(page).to have_text("estimate")
-    end
-    
-    scenario "Adding to order decreases stock further" do
-      stock_effect = create :stock_effect, item: @line_item.item
-      stock = stock_effect.stock
-      old_level = stock.level
-      new_level = old_level - (3*stock_effect.change)
-      visit "/orders/new"
-      fill_in "Quantity", with: "2"
-      click_button "Save"
-      click_link "Edit"
-      fill_in "Quantity", with: "3"
-      click_button "Save"
-      visit stock_path(stock)
-      expect(page).to have_text(new_level)
-      expect(page).to have_text("estimate")
-    end
-    
-    scenario "Subtracting from order restores stock" do
-      stock_effect = create :stock_effect, item: @line_item.item
-      stock = stock_effect.stock
-      old_level = stock.level
-      new_level = old_level - (1*stock_effect.change)
-      visit "/orders/new"
-      fill_in "Quantity", with: "2"
-      click_button "Save"
-      click_link "Edit"
-      fill_in "Quantity", with: "1"
-      click_button "Save"
-      visit stock_path(stock)
-      expect(page).to have_text(new_level)
-      expect(page).to have_text("estimate")
-    end
-    
     scenario "Orders paginated" do
       item = create :item
       50.times do
@@ -125,6 +66,52 @@ RSpec.feature "Order management", :type => :feature do
       end
       visit "/orders/"
       expect(page).to have_link("2")
+    end
+    
+
+    
+    context "Effects on stock" do
+      let(:stock_effect) {create :stock_effect, item: @line_item.item}
+      let(:stock) {stock_effect.stock}
+      
+      before(:each) do
+        @old_level = stock.level
+        visit "/orders/new"
+        fill_in "Quantity", with: "2"
+        click_button "Save"
+      end
+    
+      scenario "New order decreases stock" do
+        visit stock_path(stock)
+        expect(page).to have_text(@old_level - (2*stock_effect.change))
+        expect(page).to have_text("estimate")
+      end
+    
+      scenario "Deleting order returns stock" do
+        visit "/orders"
+        click_link "Destroy"
+        visit stock_path(stock)
+        expect(page).to have_text(@old_level)
+        expect(page).to have_text("estimate")
+      end
+    
+      scenario "Adding to order decreases stock further" do
+        click_link "Edit"
+        fill_in "Quantity", with: "3"
+        click_button "Save"
+        visit stock_path(stock)
+        expect(page).to have_text(@old_level - (3*stock_effect.change))
+        expect(page).to have_text("estimate")
+      end
+    
+      scenario "Subtracting from order restores stock" do
+        click_link "Edit"
+        fill_in "Quantity", with: "1"
+        click_button "Save"
+        visit stock_path(stock)
+        expect(page).to have_text(@old_level - (1*stock_effect.change))
+        expect(page).to have_text("estimate")
+      end
     end
     
   end
