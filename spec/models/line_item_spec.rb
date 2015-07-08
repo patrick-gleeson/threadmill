@@ -54,6 +54,7 @@ RSpec.describe LineItem, type: :model do
   describe "public instance methods" do
     context "responds to its methods" do
       it { expect(line_item).to respond_to(:price_dollars_with_symbol) }
+      it { expect(line_item).to respond_to(:total_price) }
     end
  
     context "executes methods correctly" do
@@ -61,6 +62,14 @@ RSpec.describe LineItem, type: :model do
         it "converts cents to dollars and adds a $" do
           line_item.price_at_purchase = 100
           expect(line_item.price_dollars_with_symbol).to eq("$1.00")
+        end
+      end
+      
+      describe "#total_price" do
+        it "multiplies quantity by item price" do
+          line_item.price_at_purchase = 100
+          line_item.quantity = 3
+          expect(line_item.total_price).to eq(300)
         end
       end
     end

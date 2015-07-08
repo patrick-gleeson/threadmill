@@ -15,6 +15,10 @@ class LineItem < ActiveRecord::Base
     price_at_purchase
   end
   
+  def total_price
+    price_cents * quantity
+  end
+  
   private
   
   # When we save a line item (e.g. 2 espressos)

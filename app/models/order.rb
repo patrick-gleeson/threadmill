@@ -30,9 +30,7 @@ class Order < ActiveRecord::Base
   private
   
   def total_cents
-    line_items.inject(0) do |memo, line_item|
-      memo += ((line_item.quantity || 0) * (line_item.price_at_purchase || 0))
-    end
+    line_items.map(&:total_price).sum
   end
   
   alias price_cents total_cents
