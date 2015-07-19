@@ -6,12 +6,13 @@
         - @order.errors.full_messages.each do |msg|
           %li= msg
 
-  = f.fields_for :line_items do |ff|
+  = f.fields_for :line_items, @order.current_and_potential_line_items do |ff|
     .field.row
-      .col-md-1
+      .col-md-2
         = ff.object.item.name 
+        = ff.hidden_field :id
         = ff.hidden_field :item_id
-      .col-md-1
+      .col-md-2
         = ff.label :quantity
       .col-md-2
         = ff.number_field :quantity

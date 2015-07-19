@@ -68,7 +68,7 @@ RSpec.feature "Item management", :type => :feature do
       fill_in "Price ($)", with: "4.52"
       click_button "Save"
       visit "/items"
-      click_link "Destroy"
+      click_link "Remove"
       expect(page).to have_text("Item was successfully destroyed")
       expect(page).not_to have_text("Pastry")
     end

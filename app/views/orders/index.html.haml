@@ -12,8 +12,8 @@
   %tbody
     - @orders.each do |order|
       %tr
-        %td= order.date_formatted
-        %td= order.price_dollars_with_symbol
+        %td= format_date(order.created_at)
+        %td= order.total.format
         %td= link_to 'Show', order
         %td= link_to 'Edit', edit_order_path(order)
         %td= link_to 'Destroy', order, :method => :delete, :data => { :confirm => 'Are you sure?' }

@@ -4,4 +4,10 @@
 class StockEffect < ActiveRecord::Base
   belongs_to :stock
   belongs_to :item  
+  
+  validates :change, numericality: { greater_than: 0 }
+  
+  def zero_change?
+    change.blank? || !(change.to_i > 0)
+  end
 end

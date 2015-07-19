@@ -3,7 +3,7 @@
   = @item.name
 %p
   %b Cost:
-  = @item.price_dollars_with_symbol
+  = @item.price.format
 %p
   Reduces stock by:
 - @item.stock_effects.each do |effect|

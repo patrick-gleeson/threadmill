@@ -36,7 +36,7 @@ RSpec.feature "Order management", :type => :feature do
       visit "/orders/new"
       fill_in "Quantity", with: "2"
       click_button "Save"
-      expect(page).to have_text("$#{(@line_item.price_at_purchase * 0.02).to_s}")
+      expect(page).to have_text("$#{(@line_item.price_at_purchase * 2).to_s}")
     end
     
     scenario "Edit order" do
@@ -47,7 +47,7 @@ RSpec.feature "Order management", :type => :feature do
       fill_in "Quantity", with: "3"
       click_button "Save"
       expect(page).to have_text("Order was successfully updated")
-      expect(page).to have_text("$#{(@line_item.price_at_purchase * 0.03).to_s}")
+      expect(page).to have_text("$#{(@line_item.price_at_purchase * 3).to_s}")
     end
     
     scenario "Delete item" do

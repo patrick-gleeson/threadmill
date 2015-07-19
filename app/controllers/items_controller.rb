@@ -14,12 +14,10 @@ class ItemsController < ApplicationController
   # GET /items/new
   def new
     @item = Item.new
-    @item.setup_stock_effects
   end
 
   # GET /items/1/edit
   def edit
-    @item.setup_stock_effects
   end
 
   # POST /items
@@ -66,6 +64,6 @@ class ItemsController < ApplicationController
     end
 
     def item_params
-      params.require(:item).permit(:name, :price_dollars, stock_effects_attributes:[:stock_id, :change])
+      params.require(:item).permit(:name, :price, stock_effects_attributes:[:id, :stock_id, :change])
     end
 end

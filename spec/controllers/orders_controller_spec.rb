@@ -4,15 +4,20 @@ RSpec.describe OrdersController, type: :controller do
   let(:item) {
     create :item
   }
+  
+  let(:line_item) {
+    build :line_item
+  }
+  
   let(:valid_attributes) {
     {line_items_attributes:[{item_id: item.id, quantity: 2}]}
   }
 
   let(:invalid_attributes) {
-    {line_items_attributes:[{item_id: item.id, quantity: 0}]}
+    {line_items_attributes:[{item_id: "foo", quantity: "nothing here"}]}
   }
 
-  let(:order) {create :order, line_items: [build(:line_item)]  }
+  let(:order) {create :order, line_items: [line_item]  }
 
   context "When logged in" do
     
@@ -82,10 +87,11 @@ RSpec.describe OrdersController, type: :controller do
     describe "PUT #update" do
       context "with valid params" do
         let(:new_attributes) {
-          {line_items_attributes:[{item_id: item.id, quantity: 4}]}
+          {line_items_attributes:[{id: line_item.id, item_id: item.id, quantity: 4}]}
         }
   
         it "updates the requested order" do
+          line_item.save
           put :update, {id: order.to_param, order: new_attributes}
           order.reload
           expect(order.line_items.first.item_id).to eq new_attributes[:line_items_attributes][0][:item_id]
@@ -104,13 +110,16 @@ RSpec.describe OrdersController, type: :controller do
       end
   
       context "with invalid params" do
+        let(:new_invalid_attributes) {
+          {line_items_attributes:[{id: line_item.id, item_id: item.id, quantity: 0}]}
+        }
         it "assigns the order as @order" do
           put :update, {id: order.to_param, order: invalid_attributes}
           expect(assigns(:order)).to eq(order)
         end
   
         it "re-renders the 'edit' template" do
-          put :update, {id: order.to_param, order: invalid_attributes}
+          put :update, {id: order.to_param, order: new_invalid_attributes}
           expect(response).to render_template("edit")
         end
       end

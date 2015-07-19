@@ -10,13 +10,14 @@
     = f.label :name
     = f.text_field :name
   .field
-    = f.label :price_dollars, "Price ($)"
-    = f.text_field :price_dollars
+    = f.label :price, "Price ($)"
+    = f.text_field :price
     
-  = f.fields_for :stock_effects do |ff|
+  = f.fields_for :stock_effects, @item.current_and_potential_stock_effects do |ff|
     .field.row
-      .col-md-1
-        = ff.object.stock.name 
+      .col-md-2
+        = ff.object.stock.name        
+        = ff.hidden_field :id
         = ff.hidden_field :stock_id
       .col-md-3
         = ff.label :change, "Reduces stock by (#{ff.object.stock.unit})"

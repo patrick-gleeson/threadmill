@@ -4,12 +4,12 @@ RSpec.describe ItemsController, type: :controller do
   let(:stock) { create :stock }
   let(:valid_attributes) {
     {name: "Some Menu Item", 
-     price_dollars: "1.00",
+     price: "1.00",
      stock_effects_attributes:[{stock_id: stock.id, change: 100}]}
   }
 
   let(:invalid_attributes) {
-    {name: "", price_dollars: "Three"}
+    {name: "", price: "Three"}
   }
   
   context "When logged in" do
@@ -83,14 +83,14 @@ RSpec.describe ItemsController, type: :controller do
     describe "PUT #update" do
       context "with valid params" do
         let(:new_attributes) {
-          {name: "Updated Menu Item", price_dollars: "1.50"}
+          {name: "Updated Menu Item", price: "1.50"}
         }
   
         it "updates the requested item" do
           item = create(:item)
           put :update, {id: item.to_param, item: new_attributes}
           item.reload
-          expect([item.name, item.price_dollars]).to eq [new_attributes[:name], new_attributes[:price_dollars]]
+          expect([item.name, item.price.format]).to eq ["Updated Menu Item", "$1.50"]
         end
   
         it "assigns the requested item as @item" do
@@ -198,7 +198,7 @@ RSpec.describe ItemsController, type: :controller do
           item = create(:item)
           put :update, {id: item.to_param, item: new_attributes}
           item.reload
-          expect([item.name, item.price_dollars]).not_to eq [new_attributes[:name], new_attributes[:price_dollars]]
+          expect([item.name, item.price]).not_to eq [new_attributes[:name], new_attributes[:price]]
         end
       end
   

@@ -14,12 +14,10 @@ class OrdersController < ApplicationController
   # GET /orders/new
   def new
     @order = Order.new
-    @order.setup_line_items
   end
 
   # GET /orders/1/edit
   def edit
-    @order.setup_line_items
   end
 
   # POST /orders
@@ -66,6 +64,6 @@ class OrdersController < ApplicationController
     end
 
     def order_params
-      params.require(:order).permit(line_items_attributes:[:item_id, :quantity])
+      params.require(:order).permit(line_items_attributes:[:id, :item_id, :quantity])
     end
 end

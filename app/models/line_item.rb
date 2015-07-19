@@ -1,40 +1,36 @@
 # A line item represents a part of an order that comprises several units of a given item,
 # e.g. 2 espressos
 class LineItem < ActiveRecord::Base
-  include PriceFormattable
+  
+  monetize :price_at_purchase_cents
   
   belongs_to :order
   belongs_to :item
   
-  before_save :set_price_at_purchase
+  validates :quantity, numericality: { greater_than: 0 }
   
-  before_create :change_stock
+  before_validation :set_price_at_purchase
+  before_save :change_stock
   before_destroy :unchange_stock
   
-  def price_cents
-    price_at_purchase
+  def total_price
+    price_at_purchase * quantity
   end
   
-  def total_price
-    price_cents * quantity
+  def zero_quantity?
+    quantity.blank? || quantity.to_i == 0
   end
   
   private
   
-  # When we save a line item (e.g. 2 espressos)
-  # we reduce stock levels by the amount the item affects
-  # any given stock multiplied by the quantity of that item.
-  # We also flag up that the stock level is now an estimate.
   def change_stock
     item.stock_effects.each do |effect|
+      delta = quantity - (quantity_was || 0)
       effect.stock.estimate = true
-      effect.stock.decrement! :level, (effect.change * quantity)
+      effect.stock.decrement! :level, (effect.change * delta)
     end
   end
   
-  # When we delete a line item, we undo its effect on stock (but
-  # if stock was manually adjusted between creating and deleting the line
-  # item this will skew the level, so we flag change as an estimate)
   def unchange_stock
     item.stock_effects.each do |effect|
       effect.stock.estimate = true
@@ -43,7 +39,7 @@ class LineItem < ActiveRecord::Base
   end
   
   def set_price_at_purchase
-    self.price_at_purchase = item.price_cents
+    self.price_at_purchase = item.price
   end
   
   
