@@ -25,10 +25,10 @@ class Item < ActiveRecord::Base
   end
 
   def clear_zero_change_stock_effects
+    stock_effects.select(&:zero_change?).each(&:destroy)
+
     self.stock_effects = stock_effects.reject do |effect|
       (!effect.persisted?) && (effect.zero_change?)
     end
-
-    stock_effects.select(&:zero_change?).each(&:destroy)
   end
 end

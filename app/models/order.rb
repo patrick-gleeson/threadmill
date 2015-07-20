@@ -27,11 +27,11 @@ class Order < ActiveRecord::Base
   end
 
   def clear_zero_quantity_line_items
+    line_items.select(&:zero_quantity?).each(&:destroy)
+
     self.line_items = line_items.reject do |line_item|
       (!line_item.persisted?) && (line_item.zero_quantity?)
     end
-
-    line_items.select(&:zero_quantity?).each(&:destroy)
   end
 
   def total_cents

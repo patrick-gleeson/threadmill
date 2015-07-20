@@ -8,6 +8,7 @@ RSpec.describe Order, type: :model do
   describe 'ActiveRecord associations' do
     it { expect(order).to belong_to(:user) }
     it { expect(order).to have_many(:line_items) }
+    it { expect(order).to accept_nested_attributes_for :line_items }
   end
 
   describe 'ActiveModel validations' do
@@ -19,9 +20,38 @@ RSpec.describe Order, type: :model do
     end
   end
 
+  context 'callbacks' do
+    it { expect(order).to callback(:clear_zero_quantity_line_items).before(:validation) }
+
+    describe 'clear_zero_quantity_line_items' do
+      it 'removes zero_quantity unpersisted line items' do
+        line_item = build :line_item, quantity: 0
+        order.line_items << line_item
+        order.save
+        expect(order.line_items).not_to include line_item
+      end
+
+      it 'deletes zero_quantity persisted line items' do
+        line_item = create :line_item
+        line_item.quantity = 0
+        order.line_items << line_item
+        order.save
+        expect(order.line_items).not_to include line_item
+      end
+
+      it 'allows quantitied line items' do
+        line_item = build :line_item, quantity: 10
+        order.line_items << line_item
+        order.save
+        expect(order.line_items).to include line_item
+      end
+    end
+  end
+
   describe 'public instance methods' do
     context 'responds to its methods' do
       it { expect(order).to respond_to(:total) }
+      it { expect(order).to respond_to(:current_and_potential_line_items) }
     end
 
     context 'executes methods correctly' do
@@ -29,12 +59,27 @@ RSpec.describe Order, type: :model do
         it 'sums the price at purchase of all line items' do
           line_items = create_list(:line_item, 5)
           order.line_items = line_items
-          
-          expected_total = line_items.inject(0) do |a, e| 
+
+          expected_total = line_items.inject(0) do |a, e|
             a + (e.quantity * e.price_at_purchase.cents)
           end
-          
+
           expect(order.total.cents).to eq expected_total
+        end
+      end
+
+      describe '#current_and_potential_line_items' do
+        it 'includes current line items' do
+          line_item = create :line_item
+          order.line_items << line_item
+          expect(order.current_and_potential_line_items).to include(line_item)
+        end
+
+        it 'includes unpersisted line items for all items' do
+          item = create :item
+          expect(order.current_and_potential_line_items.map(&:item)).to include(item)
+          new_line_item = order.current_and_potential_line_items.find { |line_item| line_item.item == item }
+          expect(new_line_item).not_to be_persisted
         end
       end
     end

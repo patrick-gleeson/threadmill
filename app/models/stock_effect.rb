@@ -8,6 +8,6 @@ class StockEffect < ActiveRecord::Base
   validates :change, numericality: { greater_than: 0 }
 
   def zero_change?
-    change.blank? || !(change.to_i > 0)
+    change.blank? || change.to_i == 0
   end
 end

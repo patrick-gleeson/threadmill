@@ -31,6 +31,7 @@ class LineItem < ActiveRecord::Base
   end
 
   def unchange_stock
+    return unless item
     item.stock_effects.each do |effect|
       effect.stock.estimate = true
       effect.stock.increment! :level, (effect.change * quantity)
