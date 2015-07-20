@@ -38,7 +38,8 @@ RSpec.describe LineItem, type: :model do
     it 'changes stock levels on destroy' do
       stock = create :stock
       item = create :item
-      stock_effect = create :stock_effect, item: item, stock: stock
+      create :stock_effect, item: item, stock: stock
+      
       item.reload
       line_item.item = item
       expected_stock_level = stock.level

@@ -1,3 +1,4 @@
+# Macros to make testing controllers easier
 module ControllerMacros
   def login_user
     before(:each) do
@@ -6,4 +7,4 @@ module ControllerMacros
       sign_in user
     end
   end
- end
+end

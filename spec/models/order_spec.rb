@@ -29,7 +29,11 @@ RSpec.describe Order, type: :model do
         it 'sums the price at purchase of all line items' do
           line_items = create_list(:line_item, 5)
           order.line_items = line_items
-          expected_total = line_items.inject(0) { |m, li| m + (li.quantity * li.price_at_purchase.cents) }
+          
+          expected_total = line_items.inject(0) do |a, e| 
+            a + (e.quantity * e.price_at_purchase.cents)
+          end
+          
           expect(order.total.cents).to eq expected_total
         end
       end

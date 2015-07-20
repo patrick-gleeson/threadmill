@@ -9,7 +9,8 @@ RSpec.describe 'orders/new', type: :view do
     render
 
     assert_select 'form[action=?][method=?]', orders_path, 'post' do
-      assert_select 'input#order_line_items_attributes_0_quantity[name=?]', 'order[line_items_attributes][0][quantity]'
+      assert_select 'input#order_line_items_attributes_0_quantity[name=?]', 
+                    'order[line_items_attributes][0][quantity]'
     end
   end
 end

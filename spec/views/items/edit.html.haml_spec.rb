@@ -13,7 +13,8 @@ RSpec.describe 'items/edit', type: :view do
 
       assert_select 'input#item_price[name=?]', 'item[price]'
 
-      assert_select 'input#item_stock_effects_attributes_0_change[name=?]', 'item[stock_effects_attributes][0][change]'
+      assert_select 'input#item_stock_effects_attributes_0_change[name=?]', 
+                    'item[stock_effects_attributes][0][change]'
     end
   end
 end
