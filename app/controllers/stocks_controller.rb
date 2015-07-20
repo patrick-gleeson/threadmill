@@ -1,68 +1,79 @@
 class StocksController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_stock, only: [:show, :edit, :update, :destroy]
 
-  # GET /stocks
   def index
-    @stocks = Stock.all
+    load_stocks
   end
 
-  # GET /stocks/1
-  def show
-  end
-
-  # GET /stocks/new
   def new
-    @stock = Stock.new
+    build_stock
   end
 
-  # GET /stocks/1/edit
-  def edit
+  def show
+    load_stock
   end
 
-  # POST /stocks
   def create
-    @stock = Stock.new(stock_params)
-    @stock.estimate = false
-    respond_to do |format|
-      if @stock.save
-        format.html { redirect_to @stock, notice: 'Stock was successfully created.' }
-        format.json { render :show, status: :created, location: @stock }
-      else
-        format.html { render :new }
-        format.json { render json: @stock.errors, status: :unprocessable_entity }
-      end
-    end
+    build_stock
+    save_stock || render(:new)
   end
 
-  # PATCH/PUT /stocks/1
+  def edit
+    load_stock
+    build_stock
+  end
+
   def update
-    respond_to do |format|
-      if @stock.update(stock_params.merge({estimate: false}))
-        format.html { redirect_to @stock, notice: 'Stock was successfully updated.' }
-        format.json { render :show, status: :ok, location: @stock }
-      else
-        format.html { render :edit }
-        format.json { render json: @stock.errors, status: :unprocessable_entity }
-      end
-    end
+    load_stock
+    build_stock
+    save_stock || render(:edit)
   end
 
-  # DELETE /stocks/1
   def destroy
-    @stock.destroy
-    respond_to do |format|
-      format.html { redirect_to stocks_url, notice: 'Stock was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    load_stock
+    destroy_stock
   end
 
   private
-    def set_stock
-      @stock = Stock.find(params[:id])
-    end
 
-    def stock_params
-      params.require(:stock).permit(:name, :level, :unit)
+  def load_stocks
+    @stocks ||= stock_scope.order(:name)
+  end
+
+  def load_stock
+    @stock ||= stock_scope.find(params[:id])
+  end
+
+  def build_stock
+    @stock ||= stock_scope.build
+    @stock.attributes = stock_params
+  end
+
+  def save_stock
+    success_notice = if @stock.persisted?
+                       'Stock was successfully updated'
+                     else
+                       'Stock was successfully created'
+                     end
+
+    redirect_to @stock, notice: success_notice if @stock.save
+  end
+
+  def destroy_stock
+    @stock.destroy
+    redirect_to stocks_path, notice: 'Stock was successfully deleted.'
+  end
+
+  def stock_scope
+    Stock.all
+  end
+
+  def stock_params
+    stock_params = params[:stock]
+    if stock_params
+      stock_params.permit(:name, :level, :unit)
+    else
+      {}
     end
+  end
 end

@@ -1,69 +1,80 @@
 class OrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_order, only: [:show, :edit, :update, :destroy]
 
-  # GET /orders
   def index
-    @orders = Order.order(:created_at).page(params[:page])
+    load_orders
   end
 
-  # GET /orders/1
-  def show
-  end
-
-  # GET /orders/new
   def new
-    @order = Order.new
+    build_order
   end
 
-  # GET /orders/1/edit
-  def edit
+  def show
+    load_order
   end
 
-  # POST /orders
   def create
-    @order = Order.new(order_params)
-    @order.user = current_user
-    
-    respond_to do |format|
-      if @order.save
-        format.html { redirect_to @order, notice: 'Order was successfully created.' }
-        format.json { render :show, status: :created, location: @order }
-      else
-        format.html { render :new }
-        format.json { render json: @order.errors, status: :unprocessable_entity }
-      end
-    end
+    build_order
+    save_order || (render :new)
   end
 
-  # PATCH/PUT /orders/1
+  def edit
+    load_order
+    build_order
+  end
+
   def update
-    respond_to do |format|
-      if @order.update(order_params)
-        format.html { redirect_to @order, notice: 'Order was successfully updated.' }
-        format.json { render :show, status: :ok, location: @order }
-      else
-        format.html { render :edit }
-        format.json { render json: @order.errors, status: :unprocessable_entity }
-      end
-    end
+    load_order
+    build_order
+    save_order || (render :edit)
   end
 
-  # DELETE /orders/1
   def destroy
-    @order.destroy
-    respond_to do |format|
-      format.html { redirect_to orders_url, notice: 'Order was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    load_order
+    destroy_order
   end
 
   private
-    def set_order
-      @order = Order.find(params[:id])
-    end
 
-    def order_params
-      params.require(:order).permit(line_items_attributes:[:id, :item_id, :quantity])
+  def load_orders
+    @orders ||= order_scope.order(:created_at).page(params[:page])
+  end
+
+  def load_order
+    @order ||= order_scope.find(params[:id])
+  end
+
+  def build_order
+    @order ||= order_scope.build
+    @order.attributes = order_params
+    @order.user ||= current_user
+  end
+
+  def save_order
+    success_notice = if @order.persisted?
+                       'Order was successfully updated'
+                     else
+                       'Order was successfully created'
+                     end
+
+    redirect_to @order, notice: success_notice if @order.save
+  end
+
+  def destroy_order
+    @order.destroy
+    redirect_to orders_path, notice: 'Order was successfully deleted'
+  end
+
+  def order_scope
+    Order.all
+  end
+
+  def order_params
+    order_params = params[:order]
+    if order_params
+      order_params.permit(line_items_attributes: [:id, :item_id, :quantity])
+    else
+      {}
     end
+  end
 end

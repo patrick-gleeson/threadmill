@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe "orders/show", type: :view do
+RSpec.describe 'orders/show', type: :view do
   before(:each) do
     @order = assign(:order, create(:order, line_items: [build(:line_item)]))
   end
 
-  it "renders attributes in <p>" do
+  it 'renders attributes in <p>' do
     render
     expect(rendered).to match(//)
   end

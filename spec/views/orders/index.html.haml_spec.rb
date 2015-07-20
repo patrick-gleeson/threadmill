@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "orders/index", type: :view do
+RSpec.describe 'orders/index', type: :view do
   before(:each) do
     orders = [
       create(:order, line_items: [build(:line_item)])
@@ -8,8 +8,8 @@ RSpec.describe "orders/index", type: :view do
     @orders = assign(:orders, Kaminari.paginate_array(orders).page(1))
   end
 
-  it "renders a list of orders" do
+  it 'renders a list of orders' do
     render
-    assert_select "tr>td", :text => @orders.first.total.format, :count => 1
+    assert_select 'tr>td', text: @orders.first.total.format, count: 1
   end
 end

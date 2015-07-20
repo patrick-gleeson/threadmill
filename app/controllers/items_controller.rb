@@ -1,69 +1,81 @@
 class ItemsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_item, only: [:show, :edit, :update, :destroy]
 
-  # GET /items
   def index
-    @items = Item.order(:name)
+    load_items
   end
 
-  # GET /items/1
-  def show
-  end
-
-  # GET /items/new
   def new
-    @item = Item.new
+    build_item
   end
 
-  # GET /items/1/edit
-  def edit
+  def show
+    load_item
   end
 
-  # POST /items
   def create
-    @item = Item.new(item_params)
-
-    respond_to do |format|
-      if @item.save
-        format.html { redirect_to @item, notice: 'Item was successfully created.' }
-        format.json { render :show, status: :created, location: @item }
-      else
-        format.html { render :new }
-        format.json { render json: @item.errors, status: :unprocessable_entity }
-      end
-    end
+    build_item
+    save_item || render(:new)
   end
 
-  # PATCH/PUT /items/1
+  def edit
+    load_item
+    build_item
+  end
+
   def update
-    respond_to do |format|
-      if @item.update(item_params)
-        format.html { redirect_to @item, notice: 'Item was successfully updated.' }
-        format.json { render :show, status: :ok, location: @item }
-      else
-        format.html { render :edit }
-        format.json { render json: @item.errors, status: :unprocessable_entity }
-      end
-    end
+    load_item
+    build_item
+    save_item || render(:edit)
   end
 
-  # DELETE /items/1
   def destroy
-    @item.destroy
-    respond_to do |format|
-      format.html { redirect_to items_url, notice: 'Item was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    load_item
+    destroy_item
   end
 
   private
-    
-    def set_item
-      @item = Item.find(params[:id])
-    end
 
-    def item_params
-      params.require(:item).permit(:name, :price, stock_effects_attributes:[:id, :stock_id, :change])
+  def load_items
+    @items ||= item_scope.order(:name)
+  end
+
+  def load_item
+    @item ||= item_scope.find(params[:id])
+  end
+
+  def build_item
+    @item ||= item_scope.build
+    @item.attributes = item_params
+  end
+
+  def save_item
+    success_notice = if @item.persisted?
+                       'Item was successfully updated'
+                     else
+                       'Item was successfully created'
+                     end
+
+    redirect_to @item, notice: success_notice if @item.save
+  end
+
+  def destroy_item
+    @item.destroy
+    redirect_to items_path, notice: 'Item was successfully deleted'
+  end
+
+  def item_scope
+    Item.all
+  end
+
+  def item_params
+    item_params = params[:item]
+    if item_params
+      item_params.permit(:name,
+                         :price,
+                         stock_effects_attributes: [:id, :stock_id, :change])
+    else
+      {}
     end
+  end
 end

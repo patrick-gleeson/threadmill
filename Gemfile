@@ -1,6 +1,5 @@
 source 'https://rubygems.org'
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.2'
 # Use sqlite3 as the database for Active Record
@@ -23,9 +22,9 @@ gem 'jbuilder', '~> 2.0'
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
 
-gem "haml-rails", "~> 0.9"
+gem 'haml-rails', '~> 0.9'
 
-gem "devise"
+gem 'devise'
 
 gem 'bootstrap-sass', '~> 3.3.5'
 
@@ -39,17 +38,16 @@ group :development, :test do
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
-  
-  gem 'rspec-rails', '~> 3.0'
-  
-  gem "factory_girl_rails", "~> 4.0"
-  
-  gem 'shoulda-matchers'
-  
-  gem 'shoulda-callback-matchers', '~> 1.1.1'
-  
-  gem 'capybara'
 
+  gem 'rspec-rails', '~> 3.0'
+
+  gem 'factory_girl_rails', '~> 4.0'
+
+  gem 'shoulda-matchers'
+
+  gem 'shoulda-callback-matchers', '~> 1.1.1'
+
+  gem 'capybara'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
